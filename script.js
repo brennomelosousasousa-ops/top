@@ -1,411 +1,303 @@
-/* =========================================
-   TOPCELL
-   SCRIPT.JS
-========================================= */
-
-
-/* =========================================
+/* =========================
    MENU MOBILE
-========================================= */
+========================= */
 
-const menuButton =
-    document.getElementById("menuButton");
+const menuButton = document.getElementById("menuButton");
 
-const nav =
-    document.getElementById("nav");
+const nav = document.getElementById("nav");
 
 
-if (menuButton && nav) {
+menuButton.addEventListener("click", () => {
 
-    menuButton.addEventListener(
-        "click",
-        () => {
+    nav.classList.toggle("active");
 
-            nav.classList.toggle("active");
-
-        }
-    );
+    const icon = menuButton.querySelector("i");
 
 
-    const navLinks =
-        nav.querySelectorAll("a");
+    if (nav.classList.contains("active")) {
+
+        icon.classList.remove("fa-bars");
+
+        icon.classList.add("fa-xmark");
+
+    } else {
+
+        icon.classList.remove("fa-xmark");
+
+        icon.classList.add("fa-bars");
+
+    }
+
+});
 
 
-    navLinks.forEach(
-        (link) => {
+/* =========================
+   FECHAR MENU AO CLICAR
+========================= */
 
-            link.addEventListener(
-                "click",
-                () => {
-
-                    nav.classList.remove("active");
-
-                }
-            );
-
-        }
-    );
-
-}
+const navLinks = document.querySelectorAll(".nav a");
 
 
-/* =========================================
+navLinks.forEach((link) => {
+
+    link.addEventListener("click", () => {
+
+        nav.classList.remove("active");
+
+        const icon = menuButton.querySelector("i");
+
+        icon.classList.remove("fa-xmark");
+
+        icon.classList.add("fa-bars");
+
+    });
+
+});
+
+
+/* =========================
    CARROSSEL
-========================================= */
+========================= */
 
-const carouselTrack =
-    document.getElementById(
-        "carouselTrack"
-    );
+const slides = document.querySelectorAll(".slide");
 
-const prevButton =
-    document.getElementById(
-        "prevButton"
-    );
+const dots = document.querySelectorAll(".dot");
 
-const nextButton =
-    document.getElementById(
-        "nextButton"
-    );
+const nextButton = document.getElementById("nextButton");
 
-const dots =
-    document.querySelectorAll(".dot");
+const prevButton = document.getElementById("prevButton");
 
 
 let currentSlide = 0;
 
-const totalSlides = 3;
-
-let autoSlide;
+let carouselTimer;
 
 
-/* -----------------------------------------
-   MOSTRAR SLIDE
------------------------------------------ */
+/* MOSTRAR SLIDE */
 
 function showSlide(index) {
 
-    if (!carouselTrack) {
-        return;
-    }
+    /*
+       Se chegar depois do último,
+       volta para o primeiro.
+    */
 
-
-    if (index >= totalSlides) {
+    if (index >= slides.length) {
 
         currentSlide = 0;
 
-    } else if (index < 0) {
+    }
 
-        currentSlide = totalSlides - 1;
+    /*
+       Se voltar antes do primeiro,
+       vai para o último.
+    */
 
-    } else {
+    else if (index < 0) {
+
+        currentSlide = slides.length - 1;
+
+    }
+
+    else {
 
         currentSlide = index;
 
     }
 
 
-    carouselTrack.style.transform =
-        `translateX(-${currentSlide * 100}%)`;
+    /* REMOVE ACTIVE DE TODOS */
+
+    slides.forEach((slide) => {
+
+        slide.classList.remove("active");
+
+    });
 
 
-    dots.forEach(
-        (dot, index) => {
+    dots.forEach((dot) => {
 
-            dot.classList.toggle(
-                "active",
-                index === currentSlide
-            );
+        dot.classList.remove("active");
 
-        }
-    );
+    });
+
+
+    /* ATIVA O SLIDE ATUAL */
+
+    slides[currentSlide].classList.add("active");
+
+    dots[currentSlide].classList.add("active");
+
 }
 
 
-/* -----------------------------------------
-   PRÓXIMO
------------------------------------------ */
+/* PRÓXIMO */
 
-if (nextButton) {
+function nextSlide() {
 
-    nextButton.addEventListener(
-        "click",
-        () => {
+    showSlide(currentSlide + 1);
 
-            showSlide(
-                currentSlide + 1
-            );
+    restartCarousel();
 
-            restartAutoSlide();
-
-        }
-    );
 }
 
 
-/* -----------------------------------------
-   ANTERIOR
------------------------------------------ */
+/* ANTERIOR */
 
-if (prevButton) {
+function previousSlide() {
 
-    prevButton.addEventListener(
-        "click",
-        () => {
+    showSlide(currentSlide - 1);
 
-            showSlide(
-                currentSlide - 1
-            );
+    restartCarousel();
 
-            restartAutoSlide();
-
-        }
-    );
 }
 
 
-/* -----------------------------------------
-   DOTS
------------------------------------------ */
+/* BOTÃO PRÓXIMO */
 
-dots.forEach(
-    (dot) => {
+nextButton.addEventListener("click", nextSlide);
 
-        dot.addEventListener(
-            "click",
-            () => {
 
-                const slide =
-                    Number(
-                        dot.dataset.slide
-                    );
+/* BOTÃO ANTERIOR */
 
-                showSlide(slide);
+prevButton.addEventListener("click", previousSlide);
 
-                restartAutoSlide();
 
-            }
-        );
+/* CLICAR NAS BOLINHAS */
+
+dots.forEach((dot, index) => {
+
+    dot.addEventListener("click", () => {
+
+        showSlide(index);
+
+        restartCarousel();
+
+    });
+
+});
+
+
+/* =========================
+   CARROSSEL AUTOMÁTICO
+========================= */
+
+function startCarousel() {
+
+    carouselTimer = setInterval(() => {
+
+        showSlide(currentSlide + 1);
+
+    }, 5000);
+
+}
+
+
+function restartCarousel() {
+
+    clearInterval(carouselTimer);
+
+    startCarousel();
+
+}
+
+
+startCarousel();
+
+
+/* =========================
+   PAUSAR AO PASSAR MOUSE
+========================= */
+
+const carousel = document.querySelector(".carousel");
+
+
+carousel.addEventListener("mouseenter", () => {
+
+    clearInterval(carouselTimer);
+
+});
+
+
+carousel.addEventListener("mouseleave", () => {
+
+    startCarousel();
+
+});
+
+
+/* =========================
+   INTERAÇÃO DO TÉCNICO
+   NO CELULAR
+========================= */
+
+const technicianCard =
+    document.querySelector(".technician-card");
+
+
+technicianCard.addEventListener("click", () => {
+
+    /*
+       O computador utiliza hover.
+
+       No celular não existe hover,
+       então adicionamos a classe
+       touch-active quando tocar.
+    */
+
+    if (window.innerWidth <= 600) {
+
+        technicianCard.classList.toggle("touch-active");
 
     }
-);
+
+});
 
 
-/* -----------------------------------------
-   AUTO SLIDE
------------------------------------------ */
-
-function startAutoSlide() {
-
-    autoSlide =
-        setInterval(
-            () => {
-
-                showSlide(
-                    currentSlide + 1
-                );
-
-            },
-            5000
-        );
-}
-
-
-function restartAutoSlide() {
-
-    clearInterval(autoSlide);
-
-    startAutoSlide();
-}
-
-
-startAutoSlide();
-
-
-/* -----------------------------------------
-   PAUSAR AO PASSAR O MOUSE
------------------------------------------ */
-
-const carousel =
-    document.getElementById("carousel");
-
-
-if (carousel) {
-
-    carousel.addEventListener(
-        "mouseenter",
-        () => {
-
-            clearInterval(autoSlide);
-
-        }
-    );
-
-
-    carousel.addEventListener(
-        "mouseleave",
-        () => {
-
-            startAutoSlide();
-
-        }
-    );
-}
-
-
-/* =========================================
-   INTERAÇÃO DO TÉCNICO NO CELULAR
-========================================= */
-
-const technicianImage =
-    document.querySelector(
-        ".technician-image"
-    );
-
-
-if (technicianImage) {
-
-    technicianImage.addEventListener(
-        "click",
-        () => {
-
-            if (
-                window.innerWidth <= 800
-            ) {
-
-                technicianImage.classList.toggle(
-                    "mobile-active"
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================
-   ANIMAÇÃO DOS CARDS
-========================================= */
+/* =========================
+   ANIMAÇÃO AO ENTRAR NA TELA
+========================= */
 
 const animatedElements =
     document.querySelectorAll(
-        ".service-card, .product-card, .differential"
+        ".service-card, .product-category, .feature"
     );
 
 
-if (
-    "IntersectionObserver"
-    in window
-) {
+const observer = new IntersectionObserver(
 
-    const observer =
-        new IntersectionObserver(
-            (entries) => {
+    (entries) => {
 
-                entries.forEach(
-                    (entry) => {
+        entries.forEach((entry) => {
 
-                        if (
-                            entry.isIntersecting
-                        ) {
+            if (entry.isIntersecting) {
 
-                            entry.target.classList.add(
-                                "visible"
-                            );
+                entry.target.style.opacity = "1";
 
-                            observer.unobserve(
-                                entry.target
-                            );
+                entry.target.style.transform = "translateY(0)";
 
-                        }
-
-                    }
-                );
-
-            },
-            {
-                threshold: 0.15
             }
-        );
 
+        });
 
-    animatedElements.forEach(
-        (element) => {
+    },
 
-            element.style.opacity = "0";
-
-            element.style.transform =
-                "translateY(20px)";
-
-            element.style.transition =
-                "opacity 0.6s ease, transform 0.6s ease";
-
-            observer.observe(element);
-
-        }
-    );
-}
-
-
-/* =========================================
-   ESTILO DINÂMICO PARA CARDS VISÍVEIS
-========================================= */
-
-const dynamicStyle =
-    document.createElement("style");
-
-
-dynamicStyle.textContent = `
-
-    .service-card.visible,
-    .product-card.visible,
-    .differential.visible {
-
-        opacity: 1 !important;
-
-        transform:
-            translateY(0) !important;
+    {
+        threshold: 0.1
     }
 
-    @media (max-width: 800px) {
-
-        .technician-image.mobile-active
-        .technician-overlay {
-
-            opacity: 1;
-        }
-
-        .technician-image.mobile-active
-        > img {
-
-            transform: scale(1.07);
-        }
-
-        .technician-image.mobile-active
-        .technician-overlay-content {
-
-            transform: translateY(0);
-        }
-    }
-
-`;
-
-
-document.head.appendChild(
-    dynamicStyle
 );
 
 
-/* =========================================
-   LOG
-========================================= */
+animatedElements.forEach((element) => {
 
-console.log(
-    "TopCell carregada com sucesso!"
-);
+    element.style.opacity = "0";
 
-console.log(
-    "WhatsApp: +55 64 9205-6317"
-);
+    element.style.transform = "translateY(20px)";
+
+    element.style.transition =
+        "opacity 0.6s ease, transform 0.6s ease";
+
+    observer.observe(element);
+
+});
