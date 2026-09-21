@@ -1,303 +1,160 @@
-/* =========================
+/* =========================================================
+   TOPCELL
+   SCRIPT.JS
+   ========================================================= */
+
+
+/* =========================================================
    MENU MOBILE
-========================= */
+   ========================================================= */
 
 const menuButton = document.getElementById("menuButton");
-
 const nav = document.getElementById("nav");
 
 
-menuButton.addEventListener("click", () => {
+if (menuButton && nav) {
 
-    nav.classList.toggle("active");
+    menuButton.addEventListener("click", () => {
 
-    const icon = menuButton.querySelector("i");
-
-
-    if (nav.classList.contains("active")) {
-
-        icon.classList.remove("fa-bars");
-
-        icon.classList.add("fa-xmark");
-
-    } else {
-
-        icon.classList.remove("fa-xmark");
-
-        icon.classList.add("fa-bars");
-
-    }
-
-});
-
-
-/* =========================
-   FECHAR MENU AO CLICAR
-========================= */
-
-const navLinks = document.querySelectorAll(".nav a");
-
-
-navLinks.forEach((link) => {
-
-    link.addEventListener("click", () => {
-
-        nav.classList.remove("active");
-
-        const icon = menuButton.querySelector("i");
-
-        icon.classList.remove("fa-xmark");
-
-        icon.classList.add("fa-bars");
-
-    });
-
-});
-
-
-/* =========================
-   CARROSSEL
-========================= */
-
-const slides = document.querySelectorAll(".slide");
-
-const dots = document.querySelectorAll(".dot");
-
-const nextButton = document.getElementById("nextButton");
-
-const prevButton = document.getElementById("prevButton");
-
-
-let currentSlide = 0;
-
-let carouselTimer;
-
-
-/* MOSTRAR SLIDE */
-
-function showSlide(index) {
-
-    /*
-       Se chegar depois do último,
-       volta para o primeiro.
-    */
-
-    if (index >= slides.length) {
-
-        currentSlide = 0;
-
-    }
-
-    /*
-       Se voltar antes do primeiro,
-       vai para o último.
-    */
-
-    else if (index < 0) {
-
-        currentSlide = slides.length - 1;
-
-    }
-
-    else {
-
-        currentSlide = index;
-
-    }
-
-
-    /* REMOVE ACTIVE DE TODOS */
-
-    slides.forEach((slide) => {
-
-        slide.classList.remove("active");
+        nav.classList.toggle("active");
 
     });
 
 
-    dots.forEach((dot) => {
+    /* Fecha o menu ao clicar em algum link */
 
-        dot.classList.remove("active");
+    const navLinks = nav.querySelectorAll("a");
 
-    });
+    navLinks.forEach(link => {
 
+        link.addEventListener("click", () => {
 
-    /* ATIVA O SLIDE ATUAL */
+            nav.classList.remove("active");
 
-    slides[currentSlide].classList.add("active");
-
-    dots[currentSlide].classList.add("active");
-
-}
-
-
-/* PRÓXIMO */
-
-function nextSlide() {
-
-    showSlide(currentSlide + 1);
-
-    restartCarousel();
-
-}
-
-
-/* ANTERIOR */
-
-function previousSlide() {
-
-    showSlide(currentSlide - 1);
-
-    restartCarousel();
-
-}
-
-
-/* BOTÃO PRÓXIMO */
-
-nextButton.addEventListener("click", nextSlide);
-
-
-/* BOTÃO ANTERIOR */
-
-prevButton.addEventListener("click", previousSlide);
-
-
-/* CLICAR NAS BOLINHAS */
-
-dots.forEach((dot, index) => {
-
-    dot.addEventListener("click", () => {
-
-        showSlide(index);
-
-        restartCarousel();
+        });
 
     });
 
-});
-
-
-/* =========================
-   CARROSSEL AUTOMÁTICO
-========================= */
-
-function startCarousel() {
-
-    carouselTimer = setInterval(() => {
-
-        showSlide(currentSlide + 1);
-
-    }, 5000);
-
 }
 
 
-function restartCarousel() {
+/* =========================================================
+   ANIMAÇÕES AO APARECER NA TELA
+   ========================================================= */
 
-    clearInterval(carouselTimer);
-
-    startCarousel();
-
-}
-
-
-startCarousel();
-
-
-/* =========================
-   PAUSAR AO PASSAR MOUSE
-========================= */
-
-const carousel = document.querySelector(".carousel");
-
-
-carousel.addEventListener("mouseenter", () => {
-
-    clearInterval(carouselTimer);
-
-});
-
-
-carousel.addEventListener("mouseleave", () => {
-
-    startCarousel();
-
-});
-
-
-/* =========================
-   INTERAÇÃO DO TÉCNICO
-   NO CELULAR
-========================= */
-
-const technicianCard =
-    document.querySelector(".technician-card");
-
-
-technicianCard.addEventListener("click", () => {
-
-    /*
-       O computador utiliza hover.
-
-       No celular não existe hover,
-       então adicionamos a classe
-       touch-active quando tocar.
-    */
-
-    if (window.innerWidth <= 600) {
-
-        technicianCard.classList.toggle("touch-active");
-
-    }
-
-});
-
-
-/* =========================
-   ANIMAÇÃO AO ENTRAR NA TELA
-========================= */
-
-const animatedElements =
-    document.querySelectorAll(
-        ".service-card, .product-category, .feature"
-    );
+const animatedElements = document.querySelectorAll(
+    ".novidade-card, .service-card, .product-card, .differential, .repair-item"
+);
 
 
 const observer = new IntersectionObserver(
-
     (entries) => {
 
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
 
             if (entry.isIntersecting) {
 
-                entry.target.style.opacity = "1";
+                entry.target.classList.add("show");
 
-                entry.target.style.transform = "translateY(0)";
+                observer.unobserve(entry.target);
 
             }
 
         });
 
     },
-
     {
-        threshold: 0.1
+        threshold: 0.12
     }
-
 );
 
 
-animatedElements.forEach((element) => {
+animatedElements.forEach(element => {
 
-    element.style.opacity = "0";
-
-    element.style.transform = "translateY(20px)";
-
-    element.style.transition =
-        "opacity 0.6s ease, transform 0.6s ease";
+    element.classList.add("animate");
 
     observer.observe(element);
 
 });
+
+
+/* =========================================================
+   BOTÃO WHATSAPP
+   ========================================================= */
+
+const whatsappLinks = document.querySelectorAll(
+    'a[href*="wa.me"]'
+);
+
+
+whatsappLinks.forEach(link => {
+
+    link.addEventListener("click", () => {
+
+        console.log("Abrindo WhatsApp da TopCell...");
+
+    });
+
+});
+
+
+/* =========================================================
+   HEADER AO ROLAR
+   ========================================================= */
+
+const header = document.querySelector(".header");
+
+
+window.addEventListener("scroll", () => {
+
+    if (!header) return;
+
+    if (window.scrollY > 30) {
+
+        header.classList.add("scrolled");
+
+    } else {
+
+        header.classList.remove("scrolled");
+
+    }
+
+});
+
+
+/* =========================================================
+   FECHAR MENU AO CLICAR FORA
+   ========================================================= */
+
+document.addEventListener("click", (event) => {
+
+    if (!nav || !menuButton) return;
+
+    const clickedInsideMenu =
+        nav.contains(event.target);
+
+    const clickedButton =
+        menuButton.contains(event.target);
+
+
+    if (
+        !clickedInsideMenu &&
+        !clickedButton
+    ) {
+
+        nav.classList.remove("active");
+
+    }
+
+});
+
+
+/* =========================================================
+   ANO AUTOMÁTICO NO CONSOLE
+   ========================================================= */
+
+const currentYear = new Date().getFullYear();
+
+console.log(
+    `TopCell - Site carregado em ${currentYear}`
+);
